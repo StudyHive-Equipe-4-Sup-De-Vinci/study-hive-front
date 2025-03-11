@@ -35,6 +35,7 @@ jobs:
 
       - name: Deploy github
         run: |
+             git clone git@github.com:StudyHive-Equipe-4-Sup-De-Vinci/study-hive-front.git
              git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_67d861fe-061f-4753-8e0b-c14b4cdd3973.git 
              git add .
              git commit -m "prout"
