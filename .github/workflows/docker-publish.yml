@@ -29,17 +29,9 @@ jobs:
       - name: Vérifier si l'application existe déjà et récupérer l'ID
         id: check_app
         run: |
-          APP_ID=$(clever list --json | jq -r '.applications[] | select(.name=="FRONT-DEV") | .id')
-          if [ -z "$APP_ID" ]; then
-            echo "L'application n'existe pas, création en cours..."
-            clever create --type docker FRONT-DEV --org ${{ secrets.ORGA_ID }}
+            clever create --type nodejs FRONT-DEV --region par --org ${{ secrets.ORGA_ID }}
             clever deploy
-            APP_ID=$(clever list --json | jq -r '.applications[] | select(.name=="FRONT-DEV") | .id')
-          else
-            echo "L'application existe déjà. App ID: $APP_ID"
-          fi
-          echo "APP_ID=$APP_ID" >> $GITHUB_ENV
-
+        
       - name: Deploy github
         run: git init
              git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_11d052bb-3556-48cc-a1d8-ce790d4ad0af.git
