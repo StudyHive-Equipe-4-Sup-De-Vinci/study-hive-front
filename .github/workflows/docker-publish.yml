@@ -7,17 +7,17 @@ on:
 
 jobs:
   build-and-push:
-    runs-on: berowilliam/study-hive:latest
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout du repo
-        uses: actions/checkout@v4
+      # - name: Checkout du repo
+      #   uses: actions/checkout@v4
 
-      - name: Se connecter à Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      # - name: Se connecter à Docker Hub
+      #   uses: docker/login-action@v2
+      #   with:
+      #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
+      #     password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       # - name: Construire et pousser l'image Docker
       #   uses: docker/build-push-action@v5
@@ -27,12 +27,16 @@ jobs:
       #     push: true
       #     tags: berowilliam/study-live:latest
 
-      # - name: Installer la CLI Clever Cloud
-      #   run: |
-      #     sudo curl -fsSL https://clever-tools.clever-cloud.com/gpg/cc-nexus-deb.public.gpg.key | gpg --dearmor -o /usr/share/keyrings/cc-nexus-deb.gpg
-      #     sudo echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/cc-nexus-deb.gpg] https://nexus.clever-cloud.com/repository/deb stable main" | sudo tee -a /etc/apt/sources.list
-      #     sudo apt-get update
-      #     sudo apt-get install clever-tools
+      - name: Installer la CLI Clever Cloud
+        run: |
+          sudo curl -fsSL https://clever-tools.clever-cloud.com/gpg/cc-nexus-deb.public.gpg.key | gpg --dearmor -o /usr/share/keyrings/cc-nexus-deb.gpg
+          sudo echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/cc-nexus-deb.gpg] https://nexus.clever-cloud.com/repository/deb stable main" | sudo tee -a /etc/apt/sources.list
+          sudo apt-get update
+          sudo apt-get install clever-tools
+
+      - name: Installer GIT
+        run: sudo apt update
+             sudo apt install git -y
 
       - name: Se connecter à Clever Cloud
         run: clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
@@ -42,10 +46,6 @@ jobs:
              clever env set APP_IMAGE "berowilliam/study-live:latest"
              clever deploy
 
-      # - name: Installer GIT
-      #   run: |
-      #     sudo apt install git-all
-
       - name: Deploy github
         run: git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_11d052bb-3556-48cc-a1d8-ce790d4ad0af.git
-             git push -u clever master
+          
