@@ -34,7 +34,7 @@ jobs:
         
       - name: Deploy github
         run: git init
-             git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_11d052bb-3556-48cc-a1d8-ce790d4ad0af.git
+             git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_67d861fe-061f-4753-8e0b-c14b4cdd3973.git
              git add .
              git commit -m "Mise à jour automatique via CI/CD"
              git push clever master
