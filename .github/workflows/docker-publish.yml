@@ -34,7 +34,10 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Actions"
-        
+      
+      - name: Supprimer un éventuel lock Git
+        run: rm -f .git/index.lock
+      
       - name: Deploy github
         run: |
              git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_67d861fe-061f-4753-8e0b-c14b4cdd3973.git |
