@@ -35,8 +35,7 @@ jobs:
           sudo apt-get install clever-tools
 
       - name: Installer GIT
-        run: sudo apt update
-             sudo apt install git -y
+        run: sudo apt update | sudo apt install git -y
 
       - name: Se connecter à Clever Cloud
         run: clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
