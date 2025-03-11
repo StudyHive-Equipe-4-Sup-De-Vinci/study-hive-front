@@ -26,11 +26,11 @@ jobs:
       - name: Se connecter à Clever Cloud
         run: clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
 
-      - name: Vérifier si l'application existe déjà et récupérer l'ID
-        id: check_app
-        run: |
-            clever create --type Node FRONT-DEV --region par --org ${{ secrets.ORGA_ID }}
-            clever deploy
+      # - name: Vérifier si l'application existe déjà et récupérer l'ID
+      #   id: check_app
+      #   run: |
+      #       clever create --type Node FRONT-DEV --region par --org ${{ secrets.ORGA_ID }}
+      #       clever deploy
         
       - name: Deploy github
         run: git init
