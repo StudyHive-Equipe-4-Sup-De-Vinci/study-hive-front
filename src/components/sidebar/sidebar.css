@@ -1,0 +1,44 @@
+/* Sidebar */
+.sidebar {
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+}
+
+.categories-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.categories-card h3 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.category-list {
+    list-style: none;
+}
+
+.category-list li {
+    margin-bottom: 8px;
+}
+
+.category-list a {
+    display: block;
+    padding: 8px 10px;
+    text-decoration: none;
+    color: #555;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.category-list a:hover,
+.category-list a.active {
+    background-color: #f0f4ff;
+    color: #4a6cf7;
+}
