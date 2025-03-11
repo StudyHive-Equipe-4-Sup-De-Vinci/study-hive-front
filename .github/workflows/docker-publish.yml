@@ -26,6 +26,14 @@ jobs:
       #   run: |
       #       clever create --type Node FRONT-DEV --region par --org ${{ secrets.ORGA_ID }}
       #       clever deploy
+      - name: Ajouter la clé SSH pour Clever Cloud
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.CLEVER_SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan push-n3-par-clevercloud-customers.services.clever-cloud.com >> ~/.ssh/known_hosts
 
       - name: Installer GIT
         run: sudo apt update | sudo apt install git -y
@@ -34,10 +42,7 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Actions"
-      
-      - name: Supprimer un éventuel lock Git
-        run: rm -f .git/index.lock
-      
+
       - name: Deploy github
         run: |
              git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_67d861fe-061f-4753-8e0b-c14b4cdd3973.git |
