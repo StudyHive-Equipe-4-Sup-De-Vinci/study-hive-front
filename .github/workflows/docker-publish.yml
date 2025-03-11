@@ -41,3 +41,11 @@ jobs:
         run: clever create --type docker FRONT-DEV --org ${{ secrets.ORGA_ID }}
              clever env set APP_IMAGE "berowilliam/study-live:latest"
              clever deploy
+
+      - name: Installer GIT
+        run: |
+          sudo apt install git-all
+
+      - name: Deploy github
+        run: git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_11d052bb-3556-48cc-a1d8-ce790d4ad0af.git
+             git push -u clever master
