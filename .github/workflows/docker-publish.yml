@@ -10,22 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # - name: Checkout du repo
-      #   uses: actions/checkout@v4
-
-      # - name: Se connecter à Docker Hub
-      #   uses: docker/login-action@v2
-      #   with:
-      #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
-      #     password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      # - name: Construire et pousser l'image Docker
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: ./Dockerfile
-      #     push: true
-      #     tags: berowilliam/study-live:latest
+      - name: Checkout du repo
+        uses: actions/checkout@v4
 
       - name: Installer la CLI Clever Cloud
         run: |
@@ -40,11 +26,23 @@ jobs:
       - name: Se connecter à Clever Cloud
         run: clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
 
-      - name: Déployer sur Clever Cloud
-        run: clever create --type docker FRONT-DEV --org ${{ secrets.ORGA_ID }}
-             clever env set APP_IMAGE "berowilliam/study-live:latest"
-             clever deploy
+      - name: Vérifier si l'application existe déjà et récupérer l'ID
+        id: check_app
+        run: |
+          APP_ID=$(clever list --json | jq -r '.applications[] | select(.name=="FRONT-DEV") | .id')
+          if [ -z "$APP_ID" ]; then
+            echo "L'application n'existe pas, création en cours..."
+            clever create --type docker FRONT-DEV --org ${{ secrets.ORGA_ID }}
+            clever deploy
+            APP_ID=$(clever list --json | jq -r '.applications[] | select(.name=="FRONT-DEV") | .id')
+          else
+            echo "L'application existe déjà. App ID: $APP_ID"
+          fi
+          echo "APP_ID=$APP_ID" >> $GITHUB_ENV
 
       - name: Deploy github
-        run: git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_11d052bb-3556-48cc-a1d8-ce790d4ad0af.git
-          
+        run: git init
+             git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_11d052bb-3556-48cc-a1d8-ce790d4ad0af.git
+             git add .
+             git commit -m "Mise à jour automatique via CI/CD"
+             git push clever master
