@@ -3,7 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - master  # Déclenchement sur push vers main (modifiable)
+      - master  
 
 jobs:
   build-and-push:
@@ -12,7 +12,6 @@ jobs:
     steps:
       - name: Checkout du repo
         uses: actions/checkout@v4
-
       # - name: Installer la CLI Clever Cloud
       #   run: |
       #     sudo curl -fsSL https://clever-tools.clever-cloud.com/gpg/cc-nexus-deb.public.gpg.key | gpg --dearmor -o /usr/share/keyrings/cc-nexus-deb.gpg
@@ -30,8 +29,14 @@ jobs:
 
       - name: Installer GIT
         run: sudo apt update | sudo apt install git -y
+      
+      - name: Configurer Git pour GitHub Actions
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions"
         
       - name: Deploy github
+        run: |
              git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_67d861fe-061f-4753-8e0b-c14b4cdd3973.git |
              git add . |
              git commit -m "Mise à jour automatique via CI/CD" |
