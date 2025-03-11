@@ -35,9 +35,9 @@ jobs:
           sudo apt-get install clever-tools
 
       - name: Se connecter à Clever Cloud
-        run: clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }} link --org ${{ secrets.ORGA_ID }}
+        run: clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
 
       - name: Déployer sur Clever Cloud
-        run: clever create --type docker FRONT-DEV
+        run: clever create --type docker FRONT-DEV --org ${{ secrets.ORGA_ID }}
              clever env set APP_IMAGE "berowilliam/study-live:latest"
              clever deploy
