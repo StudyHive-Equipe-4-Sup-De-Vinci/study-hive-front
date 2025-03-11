@@ -36,15 +36,9 @@ jobs:
 
       - name: Se connecter à Clever Cloud
         run: clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
+             clever link --org <secrets.ID_ORG>
 
       - name: Déployer sur Clever Cloud
-        run: |
-        name: Create review app
-        uses: CleverCloud/clever-cloud-review-app@latest
-        env:
-          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
-          ORGA_ID: ${{ secrets.ORGA_ID }}
-        with:
-          type: docker
-          set-env: true
+        run: clever create --type docker FRONT-DEV
+             clever env set APP_IMAGE "berowilliam/study-live:latest"
+             clever deploy
