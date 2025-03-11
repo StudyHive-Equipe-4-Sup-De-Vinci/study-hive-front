@@ -29,7 +29,7 @@ jobs:
       - name: Vérifier si l'application existe déjà et récupérer l'ID
         id: check_app
         run: |
-            clever create --type Node.js FRONT-DEV --region par --org ${{ secrets.ORGA_ID }}
+            clever create --type Node FRONT-DEV --region par --org ${{ secrets.ORGA_ID }}
             clever deploy
         
       - name: Deploy github
