@@ -13,7 +13,7 @@ main {
 .content-header {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 15px;
     justify-content: space-between;
     align-items: start;
     margin-bottom: 15px;

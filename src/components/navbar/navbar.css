@@ -89,3 +89,35 @@ header {
 .search-icon {
     pointer-events: none;
 }
+
+/*Icon*/
+.icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #6e7a8a;
+}
+
+.icon-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #ff3e6c;
+    transform: scale(1.1);
+}
+
+.icon-btn:active {
+    transform: scale(0.95);
+}
+
+/* Animation pour l'effet like */
+.icon-btn.active {
+    color: #ff3e6c;
+    animation: pulse 0.3s ease;
+}
