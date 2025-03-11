@@ -3,7 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - devops  # Déclenchement sur push vers main (modifiable)
+      - master  # Déclenchement sur push vers main (modifiable)
 
 jobs:
   build-and-push:
@@ -34,7 +34,6 @@ jobs:
         
       - name: Deploy github
         run: git init
-             git clone git@github.com:StudyHive-Equipe-4-Sup-De-Vinci/study-hive-front.git
              git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/app_11d052bb-3556-48cc-a1d8-ce790d4ad0af.git
              git add .
              git commit -m "Mise à jour automatique via CI/CD"
