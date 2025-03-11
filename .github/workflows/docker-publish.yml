@@ -35,7 +35,7 @@ jobs:
           sudo apt-get install clever-tools
 
       - name: Se connecter à Clever Cloud
-        run: clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }} link --org <secrets.ID_ORG>
+        run: clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }} link --org <secrets.ORGA_ID>
 
       - name: Déployer sur Clever Cloud
         run: clever create --type docker FRONT-DEV
