@@ -3,10 +3,10 @@ name: Push Code
 on:
   push:
     branches:
-      - main  
+      - master  
   pull_request:
     branches:
-      - main
+      - master
     types:
       - closed 
 
@@ -62,4 +62,4 @@ jobs:
              clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
              clever link ${{ secrets.APP_ID_DEV }} --alias FRONT_PROD
              nohup clever restart --alias FRONT_PROD > /dev/null 2>&1 &
-    #e
+    
