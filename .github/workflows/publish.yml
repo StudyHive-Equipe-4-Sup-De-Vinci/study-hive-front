@@ -11,7 +11,27 @@ on:
       - closed 
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Installer Nodes
+        run: |
+          sudo apt update && sudo apt upgrade -y
+          sudo apt install nodejs npm -y
+          sudo npm install
+          sudo npm run build --silent &
+
+      - name: Test curl
+        run: |
+          curl localhost:3000
+
   build-and-push:
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
