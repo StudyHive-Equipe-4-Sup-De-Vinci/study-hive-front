@@ -1,16 +1,14 @@
 import {Link} from "react-router-dom";
-import './home.css';
-import Navbar from '../../components/navbar/navbar.tsx';
-import Sidebar from "../../components/sidebar/sidebar.tsx";
+import './Favorites.css';
+import Navbar from "../../components/navbar/navbar.tsx";
 import Filter from "../../components/filter/filter.tsx";
 
-export default function Home() {
+export default function Favorites() {
     return (
         <div className="container">
             <Navbar/>
             <main>
-                <Sidebar/>
-                <div className="content">
+                <div className="favoris-content">
                     <div className="content-header">
                         <div className="content-header-actions">
                             <label htmlFor="file-upload" className="btn-primary">
@@ -28,18 +26,10 @@ export default function Home() {
                             />
                             <Filter/>
                         </div>
-
-                        <h2 className="title-page">Cours populaires</h2>
-
+                        <h2 className="title-page">Mes favoris</h2>
                     </div>
 
                     <div className="tabs">
-                        {/*<div className="tab-list">
-                            <button className="tab active" data-tab="populaires">Populaires</button>
-                            <button className="tab" data-tab="recents">Récents</button>
-                            <button className="tab" data-tab="meilleurs">Meilleurs</button>
-                        </div>*/}
-
                         <div className="tab-content active" id="populaires">
                             <div className="course-card">
                                 <div className="vote-section">
@@ -99,10 +89,10 @@ export default function Home() {
                                                 <path d="M4 18v-2a4 4 0 0 1 4-4h12"/>
                                             </svg>
                                         </button>
-                                        <button className="btn-text">
+                                        <button className="btn-text icon-btn">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                 stroke-linecap="round" stroke-linejoin="round"
+                                                 viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"
+                                                 strokeLinecap="round" strokeLinejoin="round"
                                                  className="lucide lucide-bookmark">
                                                 <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
                                             </svg>
@@ -166,10 +156,10 @@ export default function Home() {
                                                 <path d="M4 18v-2a4 4 0 0 1 4-4h12"/>
                                             </svg>
                                         </button>
-                                        <button className="btn-text">
+                                        <button className="btn-text icon-btn">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                 stroke-linecap="round" stroke-linejoin="round"
+                                                 viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"
+                                                 strokeLinecap="round" strokeLinejoin="round"
                                                  className="lucide lucide-bookmark">
                                                 <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
                                             </svg>
@@ -231,10 +221,10 @@ export default function Home() {
                                                 <path d="M4 18v-2a4 4 0 0 1 4-4h12"/>
                                             </svg>
                                         </button>
-                                        <button className="btn-text">
+                                        <button className="btn-text icon-btn">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                 stroke-linecap="round" stroke-linejoin="round"
+                                                 viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"
+                                                 strokeLinecap="round" strokeLinejoin="round"
                                                  className="lucide lucide-bookmark">
                                                 <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>
                                             </svg>
@@ -256,4 +246,4 @@ export default function Home() {
             </main>
         </div>
     );
-}
+};
