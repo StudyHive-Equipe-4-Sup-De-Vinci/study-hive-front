@@ -11,6 +11,6 @@ export default defineConfig(({ mode }) => {
     },
 
     plugins: [react(), tailwindcss()],
-    server: { port: Number(env.PORT) },
+    server: { port: 8080 },
   };
 });
