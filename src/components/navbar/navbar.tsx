@@ -6,28 +6,29 @@ export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const toggleDropdown = (): void => {
-    // Si on ferme le menu, on retire l'écouteur d'événement
+  const toggleDropdown = () => {
     if (isDropdownOpen) {
       setIsDropdownOpen(false);
     } else {
-      // Si on ouvre le menu, on l'ouvre d'abord
       setIsDropdownOpen(true);
 
-      // Puis on ajoute l'écouteur d'événement après un court délai
+      // Ajouter un gestionnaire d'événement pour les clics en dehors du menu
       setTimeout(() => {
-        const closeMenuOnClickOutside = (event: Event): void => {
-          // Vérifier si dropdownRef existe et si la cible du clic est à l'extérieur
-          const target = event.target as HTMLElement;
-          if (dropdownRef.current && !dropdownRef.current.contains(target)) {
+        const handleClickOutside = (event: MouseEvent) => {
+          if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
             setIsDropdownOpen(false);
-            document.removeEventListener("click", closeMenuOnClickOutside);
+            document.removeEventListener('click', handleClickOutside);
           }
         };
 
-        document.addEventListener("click", closeMenuOnClickOutside);
+        document.addEventListener('click', handleClickOutside);
       }, 0);
     }
+  };
+
+  // Fonction pour fermer le menu après avoir cliqué sur un lien
+  const handleLinkClick = () => {
+    setIsDropdownOpen(false);
   };
 
   return (
@@ -98,50 +99,48 @@ export default function Navbar() {
             </button>
 
             {isDropdownOpen && (
-              <div className="dropdown-menu">
-                <Link
-                  to="/favorites"
-                  className="menu-item"
-                  style={{ textDecoration: "none" }}
-                >
-                  {/*<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                         fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-                                         strokeLinejoin="round">
-                                        <path
-                                            d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-                                    </svg>*/}
-                  <span>Favoris</span>
-                </Link>
-                <Link
-                  to="/login"
-                  className="menu-item"
-                  style={{ textDecoration: "none" }}
-                >
-                  {/*<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                         fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-                                         strokeLinejoin="round">
-                                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                                        <polyline points="10 17 15 12 10 7"></polyline>
-                                        <line x1="15" y1="12" x2="3" y2="12"></line>
-                                    </svg>*/}
-                  <span>Se connecter</span>
-                </Link>
-                <Link
-                  to="/signin"
-                  className="menu-item"
-                  style={{ textDecoration: "none" }}
-                >
-                  {/*<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                         fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-                                         strokeLinejoin="round">
-                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="9" cy="7" r="4"></circle>
-                                        <line x1="19" y1="8" x2="19" y2="14"></line>
-                                        <line x1="22" y1="11" x2="16" y2="11"></line>
-                                    </svg>*/}
-                  <span>S'inscrire</span>
-                </Link>
-              </div>
+                <div className="dropdown-menu">
+                  <Link
+                      to="/profile"
+                      className="menu-item"
+                      style={{ textDecoration: "none" }}
+                      onClick={handleLinkClick}
+                  >
+                    <span>Profil</span>
+                  </Link>
+                  <Link
+                      to="/myWorksheets"
+                      className="menu-item"
+                      style={{ textDecoration: "none" }}
+                      onClick={handleLinkClick}
+                  >
+                    <span>Mes fiches</span>
+                  </Link>
+                  <Link
+                      to="/favorites"
+                      className="menu-item"
+                      style={{ textDecoration: "none" }}
+                      onClick={handleLinkClick}
+                  >
+                    <span>Favoris</span>
+                  </Link>
+                  <Link
+                      to="/login"
+                      className="menu-item"
+                      style={{ textDecoration: "none" }}
+                      onClick={handleLinkClick}
+                  >
+                    <span>Se connecter</span>
+                  </Link>
+                  {/*<Link
+                      to="/signin"
+                      className="menu-item"
+                      style={{ textDecoration: "none" }}
+                      onClick={handleLinkClick}
+                  >
+                    <span>S'inscrire</span>
+                  </Link>*/}
+                </div>
             )}
           </div>
         </div>

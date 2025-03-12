@@ -1,18 +1,20 @@
 import {Link} from "react-router-dom";
-import "./favorites.css";
+import "./myWorksheets.css";
 import Sort from "../../components/sort/sort.tsx";
+import Dropzone from "../../components/dropzone/dropzone.tsx";
 import Return from "../../components/return/return.tsx";
 
-export default function Favorites() {
+export default function MyWorksheets() {
     return (
         <main>
             <div className="favoris-content">
                 <div className="content-header">
                     <div className="content-header-actions">
                         <Return />
+                        <Dropzone />
                         <Sort/>
                     </div>
-                    <h2 className="title-page">Mes favoris</h2>
+                    <h2 className="title-page">Mes fiches de cours</h2>
                 </div>
 
                 <div className="tabs">
