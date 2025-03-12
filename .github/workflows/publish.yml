@@ -61,6 +61,4 @@ jobs:
         run: |
              clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
              clever link ${{ secrets.APP_ID_DEV }} --alias FRONT_PROD
-             clever env set BACKEND_URL ${{ secrets.BACKEND_URL_DEV }} --alias FRONT_PROD
-             clever env set PORT ${{ secrets.PORT }} --alias FRONT_PROD
              nohup clever restart --alias FRONT_PROD > /dev/null 2>&1 &
