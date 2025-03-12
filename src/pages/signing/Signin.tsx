@@ -25,7 +25,7 @@ function Signin() {
   return (
     <>
       <div className="signinBox">
-        <div>Connexion</div>
+        <div>Inscription</div>
         <div>
           <input
             className="form__input"
@@ -55,7 +55,7 @@ function Signin() {
             type="submit"
             onClick={() => submit()}
           >
-            Se connecter
+            S'inscrire
           </button>
           {errorMessage && <div>{errorMessage}</div>}
         </div>
