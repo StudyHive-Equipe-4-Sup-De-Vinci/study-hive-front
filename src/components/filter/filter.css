@@ -1,0 +1,25 @@
+/*Filter*/
+.sort-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.sort-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    min-width: 150px;
+    z-index: 10;
+}
+
+.sort-item {
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.sort-item:hover {
+    background-color: #f5f7fa;
+}
