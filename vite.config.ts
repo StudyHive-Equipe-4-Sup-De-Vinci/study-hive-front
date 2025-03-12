@@ -1,5 +1,6 @@
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -9,6 +10,6 @@ export default defineConfig(({ mode }) => {
       "process.env.FRONTEND_URL": JSON.stringify(env.FRONTEND_URL),
     },
 
-    plugins: [react()],
+    plugins: [react(), tailwindcss()],
   };
-});
+});;
