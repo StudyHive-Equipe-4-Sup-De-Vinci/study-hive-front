@@ -17,7 +17,7 @@ function HealthCheck() {
       );
       console.log(healthCheckState);
       setHealthCheckStatus(HealthState.OK);
-    } catch (e) {
+    } catch (e:any) {
       console.log(e.status);
       if (e.status == 500) {
         setHealthCheckStatus(HealthState.ERROR_DB);
