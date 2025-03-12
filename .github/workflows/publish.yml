@@ -51,15 +51,16 @@ jobs:
 
       - name: Deploy github
         run: |
-             git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/${{ secrets.APP_ID }}.git 
+             git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/${{ secrets.APP_ID_DEV }}.git 
              git add .
              git commit -m "Mise à jour automatique via CI/CD" || echo "Aucune modification à commit"
-             git push clever master --force
+             git push clever main:master --force
+      
 
       - name: SET VENV
         run: |
              clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
-             clever link ${{ secrets.APP_ID }} --alias FRONT_PROD
-             clever env set BACKEND_URL ${{ secrets.BACKEND_URL }} --alias FRONT_PROD
+             clever link ${{ secrets.APP_ID_DEV }} --alias FRONT_PROD
+             clever env set BACKEND_URL ${{ secrets.BACKEND_URL_DEV }} --alias FRONT_PROD
              clever env set PORT ${{ secrets.PORT }} --alias FRONT_PROD
              nohup clever restart --alias FRONT_PROD > /dev/null 2>&1 &
