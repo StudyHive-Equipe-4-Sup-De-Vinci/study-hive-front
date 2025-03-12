@@ -4,6 +4,7 @@ import Favorites from "./pages/favorites/Favorites.tsx";
 import Lesson from "./pages/lesson/Lesson.tsx";
 import Login from "./pages/login/Login";
 import Signin from "./pages/signing/Signin.tsx";
+import HealthCheck from "./pages/health-check/HealthCheck.tsx";
 
 const AppRoot = () => {
   return (
@@ -15,6 +16,7 @@ const AppRoot = () => {
       <Route path="*" element={<>404</>} />
       <Route path="/favorites" element={<Favorites />} />
       <Route path="/lesson" element={<Lesson />} />
+      <Route path="/health_check" element={<HealthCheck />} />
     </Routes>
   );
 };
