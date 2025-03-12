@@ -3,10 +3,10 @@ name: Push Code
 on:
   push:
     branches:
-      - master  
+      - main  
   pull_request:
     branches:
-      - master
+      - main
     types:
       - closed 
 
