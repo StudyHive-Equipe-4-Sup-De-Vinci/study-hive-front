@@ -1,11 +1,13 @@
 name: Push Code
 on:
+  push:
+    branches:
+      - main  
   pull_request:
     branches:
-      - master
+      - main
     types:
-      - closed
-
+      - closed  
 jobs:
   test:
     runs-on: ubuntu-latest
