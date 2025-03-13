@@ -21,7 +21,6 @@ const AppRoot = () => {
       <Route path="/favorites" element={<Favorites />} />
       <Route path="/course" element={<Course />} />
       <Route path="/myWorksheets" element={<MyWorksheets />} />
-      <Route path="/lesson" element={<Lesson />} />
       <Route path="/health_check" element={<HealthCheck />} />
     </Routes>
   );
