@@ -1,54 +1,134 @@
-import {useCallback, useState} from 'react';
-import {useDropzone, FileRejection, DropzoneOptions} from 'react-dropzone';
+import { useCallback, useState } from 'react';
+import { useDropzone, FileRejection, DropzoneOptions } from 'react-dropzone';
 
-interface FileWithPreview extends File {
+// Liste des matières disponibles
+const MATIERES = [
+    'Mathématiques',
+    'Physique',
+    'Chimie',
+    'Informatique',
+    'Biologie',
+    'Histoire',
+    'Géographie',
+    'Langues',
+    'Sciences Économiques',
+    'Philosophie',
+    'Arts'
+];
+
+interface FichierTelechargé extends File {
     preview: string;
 }
 
 export default function Dropzone() {
     // État pour stocker les fichiers avec leurs aperçus
-    const [files, setFiles] = useState<FileWithPreview[]>([]);
+    const [fichiers, setFichiers] = useState<FichierTelechargé[]>([]);
+
+    // États pour le titre et la matière
+    const [titre, setTitre] = useState<string>('');
+    const [matiere, setMatiere] = useState<string>('');
+
     // État pour gérer le survol
-    const [isHovered, setIsHovered] = useState(false);
+    const [estSurvole, setEstSurvole] = useState(false);
 
     // Gérer le dépôt de fichiers
-    const onDrop = useCallback((acceptedFiles: File[], fileRejections: FileRejection[]) => {
-        if (acceptedFiles.length > 0) {
+    const onDrop = useCallback((fichiersAcceptes: File[], rejetsDefichiers: FileRejection[]) => {
+        if (fichiersAcceptes.length > 0) {
             // Créer des objets avec prévisualisations pour chaque fichier
-            const filesWithPreviews = acceptedFiles.map(file =>
-                Object.assign(file, {
-                    preview: file.type.startsWith('image/')
-                        ? URL.createObjectURL(file)
-                        : file.type === 'application/pdf'
+            const fichiersAvecPreviews = fichiersAcceptes.map(fichier =>
+                Object.assign(fichier, {
+                    preview: fichier.type.startsWith('image/')
+                        ? URL.createObjectURL(fichier)
+                        : fichier.type === 'application/pdf'
                             ? '/pdf-icon.png'
                             : '/file-icon.png'
                 })
             );
 
             // Ajouter les nouveaux fichiers à l'état
-            setFiles(prevFiles => [...prevFiles, ...filesWithPreviews]);
+            setFichiers(fichiersPrecedents => [...fichiersPrecedents, ...fichiersAvecPreviews]);
         }
 
-        if (fileRejections.length > 0) {
-            console.log('Fichiers rejetés:', fileRejections);
+        if (rejetsDefichiers.length > 0) {
+            console.log('Fichiers rejetés:', rejetsDefichiers);
             alert(`Certains fichiers ont été rejetés. Assurez-vous qu'ils respectent les critères (type et taille).`);
         }
     }, []);
 
     // Retirer un fichier de la liste
-    const removeFile = (file: FileWithPreview) => {
-        const newFiles = [...files];
-        newFiles.splice(newFiles.indexOf(file), 1);
-        setFiles(newFiles);
+    const supprimerFichier = (fichier: FichierTelechargé) => {
+        const nouveauxFichiers = [...fichiers];
+        nouveauxFichiers.splice(nouveauxFichiers.indexOf(fichier), 1);
+        setFichiers(nouveauxFichiers);
 
         // Libérer l'URL si c'est une image
-        if (file.type.startsWith('image/')) {
-            URL.revokeObjectURL(file.preview);
+        if (fichier.type.startsWith('image/')) {
+            URL.revokeObjectURL(fichier.preview);
+        }
+
+        // Réinitialiser le titre et la matière si plus aucun fichier
+        if (nouveauxFichiers.length === 0) {
+            setTitre('');
+            setMatiere('');
+        }
+    };
+
+    const handlePublier = () => {
+        // Validation du titre et de la matière
+        if (!titre.trim()) {
+            alert('Veuillez saisir un titre pour le cours');
+            return;
+        }
+
+        if (!matiere) {
+            alert('Veuillez sélectionner une matière');
+            return;
+        }
+
+        if (fichiers.length > 0) {
+            // Convertir les fichiers en base64 ou stocker leurs URLs
+            const fichiersAStocquer = fichiers.map(async (fichier) => {
+                // Si c'est une image ou un PDF, convertir en base64
+                if (fichier.type.startsWith('image/') || fichier.type === 'application/pdf') {
+                    return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            resolve({
+                                nom: fichier.name,
+                                type: fichier.type,
+                                donnees: reader.result as string, // base64
+                                taille: fichier.size,
+                                titre: titre,
+                                matiere: matiere
+                            });
+                        };
+                        reader.readAsDataURL(fichier);
+                    });
+                }
+
+                // Pour les autres types de fichiers
+                return {
+                    nom: fichier.name,
+                    type: fichier.type,
+                    donnees: URL.createObjectURL(fichier),
+                    taille: fichier.size,
+                    titre: titre,
+                    matiere: matiere
+                };
+            });
+
+            // Attendre que tous les fichiers soient convertis
+            Promise.all(fichiersAStocquer).then((fichiersPrets) => {
+                localStorage.setItem('fichiersTelechargés', JSON.stringify(fichiersPrets));
+                window.location.href = '/course';
+            });
+        } else {
+            alert('Veuillez télécharger au moins un fichier avant de publier.');
         }
     };
 
     // Configuration de Dropzone avec typage
-    const dropzoneOptions: DropzoneOptions = {
+    const optionsZoneDepot: DropzoneOptions = {
         onDrop,
         accept: {
             'image/*': ['.jpeg', '.jpg', '.png', '.gif'],
@@ -58,7 +138,7 @@ export default function Dropzone() {
         multiple: true
     };
 
-    const {getRootProps, getInputProps, isDragActive} = useDropzone(dropzoneOptions);
+    const {getRootProps, getInputProps, isDragActive} = useDropzone(optionsZoneDepot);
 
     return (
         <div className="space-y-4">
@@ -66,24 +146,24 @@ export default function Dropzone() {
             <div
                 {...getRootProps()}
                 className={`border-2 border-dashed border-gray-300 rounded-lg cursor-pointer transition-all duration-500 ease-in-out ${
-                    isHovered || isDragActive
+                    estSurvole || isDragActive
                         ? 'p-8 bg-gray-50 border-blue-300'
                         : 'p-3 hover:border-blue-300'
                 }`}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
+                onMouseEnter={() => setEstSurvole(true)}
+                onMouseLeave={() => setEstSurvole(false)}
             >
                 <div className={`transition-all duration-500 ease-in-out overflow-hidden ${
-                    isHovered || isDragActive ? 'max-h-40 opacity-100' : 'max-h-8 opacity-100'
+                    estSurvole || isDragActive ? 'max-h-40 opacity-100' : 'max-h-8 opacity-100'
                 }`}>
                     <input {...getInputProps()} />
                     {isDragActive ? (
                         <p className="text-blue-500 text-center">Déposez les fichiers ici...</p>
-                    ) : isHovered ? (
+                    ) : estSurvole ? (
                         <div className="text-center">
                             <p className="mb-2">Glissez-déposez des fichiers ici, ou cliquez pour les sélectionner</p>
                             <p className="text-sm text-gray-500">
-                                (Uniquement les images et PDF, max 5MB)
+                                (Uniquement les images et PDF, max 5 Mo)
                             </p>
                         </div>
                     ) : (
@@ -100,18 +180,18 @@ export default function Dropzone() {
             </div>
 
             {/* Aperçu des fichiers */}
-            {files.length > 0 && (
+            {fichiers.length > 0 && (
                 <div className="mt-4">
                     <h3 className="text-lg font-medium mb-2">Fichiers sélectionnés</h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {files.map((file, index) => (
+                        {fichiers.map((fichier, index) => (
                             <div key={index}
                                  className="relative border rounded-lg overflow-hidden shadow-sm transition-transform duration-300 ease-in-out hover:shadow-md hover:-translate-y-1">
                                 {/* Aperçu du fichier */}
-                                {file.type.startsWith('image/') ? (
+                                {fichier.type.startsWith('image/') ? (
                                     <img
-                                        src={file.preview}
-                                        alt={file.name}
+                                        src={fichier.preview}
+                                        alt={fichier.name}
                                         className="w-full h-32 object-cover"
                                     />
                                 ) : (
@@ -126,11 +206,11 @@ export default function Dropzone() {
 
                                 {/* Nom et taille du fichier */}
                                 <div className="p-2">
-                                    <p className="text-sm font-medium truncate" title={file.name}>
-                                        {file.name}
+                                    <p className="text-sm font-medium truncate" title={fichier.name}>
+                                        {fichier.name}
                                     </p>
                                     <p className="text-xs text-gray-500">
-                                        {(file.size / 1024).toFixed(0)} KB
+                                        {(fichier.size / 1024).toFixed(0)} Ko
                                     </p>
                                 </div>
 
@@ -138,7 +218,7 @@ export default function Dropzone() {
                                 <button
                                     type="button"
                                     className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors duration-300 ease-in-out transform hover:scale-110"
-                                    onClick={() => removeFile(file)}
+                                    onClick={() => supprimerFichier(fichier)}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none"
                                          viewBox="0 0 24 24" stroke="currentColor">
@@ -149,6 +229,67 @@ export default function Dropzone() {
                             </div>
                         ))}
                     </div>
+
+
+                    {/* Section Titre et Matière - Affichée uniquement si des fichiers ont été importés */}
+                    {fichiers.length > 0 && (
+                        <div className="bg-white rounded-lg shadow-sm mt-4 p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Titre du cours */}
+                                <div>
+                                    <label
+                                        htmlFor="course-title"
+                                        className="block text-sm font-medium text-gray-700 mb-2"
+                                    >
+                                        Titre du cours
+                                    </label>
+                                    <input
+                                        id="course-title"
+                                        type="text"
+                                        value={titre}
+                                        onChange={(e) => setTitre(e.target.value)}
+                                        placeholder="Entrez le titre de votre cours"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    />
+                                </div>
+
+                                {/* Sélection de la matière */}
+                                <div>
+                                    <label
+                                        htmlFor="course-subject"
+                                        className="block text-sm font-medium text-gray-700 mb-2"
+                                    >
+                                        Matière
+                                    </label>
+                                    <select
+                                        id="course-subject"
+                                        value={matiere}
+                                        onChange={(e) => setMatiere(e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    >
+                                        <option value="">Sélectionnez une matière</option>
+                                        {MATIERES.map((matiereOption) => (
+                                            <option key={matiereOption} value={matiereOption}>
+                                                {matiereOption}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Bouton Publier */}
+                            {fichiers.length > 0 && (
+                                <div className="mt-4 flex justify-center">
+                                    <button
+                                        onClick={handlePublier}
+                                        className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300 ease-in-out"
+                                    >
+                                        Publier
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
         </div>

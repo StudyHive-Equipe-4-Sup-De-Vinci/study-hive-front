@@ -1,11 +1,30 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Return from "../../components/return/return.tsx";
 
 export default function Profile() {
     const [activeTab, setActiveTab] = useState('profile');
+    const [profilImage, setProfilImage] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Gestion de la sélection de fichier
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfilImage(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    // Déclenchement de l'input de fichier
+    const triggerFileInput = () => {
+        fileInputRef.current?.click();
+    };
 
     return (
-        <div className="max-w-6xl mx-4 my-8 w-full mx-auto items-center justify-center rounded-lg shadow-md">
+        <div className="max-w-6xl mx-4 my-8 w-full mx-auto items-center justify-center">
             <div className="content-header">
                 <div className="content-header-actions">
                     <Return />
@@ -15,12 +34,57 @@ export default function Profile() {
 
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 {/* En-tête du profil */}
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 sm:p-10">
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 sm:p-10 relative">
                     <div className="flex flex-col sm:flex-row items-center">
-                        <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-3xl font-bold text-blue-500 mb-4 sm:mb-0 sm:mr-6">
-                            JW
+                        <div className="relative flex flex-col items-center">
+                            {/* Image de profil */}
+                            <div
+                                className={`w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold text-blue-500 mb-8 
+                                    ${profilImage ? 'bg-cover bg-center' : 'bg-white'}`}
+                                style={{
+                                    backgroundImage: profilImage ? `url(${profilImage})` : 'none'
+                                }}
+                            >
+                                {!profilImage && 'JW'}
+                            </div>
+
+                            {/* Bouton d'édition de photo */}
+                            <button
+                                onClick={triggerFileInput}
+                                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5 text-blue-600"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                                    />
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                                    />
+                                </svg>
+                            </button>
+
+                            {/* Input de fichier caché */}
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                accept="image/*"
+                                className="hidden"
+                            />
                         </div>
-                        <div className="text-center sm:text-left">
+                        <div className="text-center sm:text-left sm:ml-6">
                             <h1 className="text-2xl font-bold text-white">John Wick</h1>
                             <p className="text-blue-100">john.wickh@example.com</p>
                             <p className="text-blue-100 mt-2">Membre depuis mars 2022</p>
@@ -28,7 +92,7 @@ export default function Profile() {
                     </div>
                 </div>
 
-                {/* Navigation par onglets */}
+                {/* Reste du code du composant Profile */}
                 <div className="border-b border-gray-200">
                     <nav className="flex">
                         <button
