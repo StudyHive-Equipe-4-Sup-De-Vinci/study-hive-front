@@ -37,7 +37,7 @@ export default function Sort() {
 
     return (
         <div className="sort-dropdown" ref={sortRef}>
-            <button className="btn-primary" onClick={toggleSortMenu}>
+            <button className="ml-4 btn-primary" onClick={toggleSortMenu}>
                 Trier: {selectedSort}
             </button>
             {showSortMenu && (
