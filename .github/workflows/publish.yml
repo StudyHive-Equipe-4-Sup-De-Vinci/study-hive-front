@@ -26,7 +26,7 @@ jobs:
 
       - name: Test curl
         run: |
-          curl localhost:3000
+          curl localhost:8080
 
   build-and-push:
     needs: test
