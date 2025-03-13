@@ -29,6 +29,7 @@ jobs:
           curl localhost:3000
 
   build-and-push:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout du repo
