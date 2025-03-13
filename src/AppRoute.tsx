@@ -19,7 +19,7 @@ const AppRoot = () => {
       {/* <Route path="/profile" element={<Profile/>} /> // CECI EST UN EXEMPLE DE COMMENT IMPLEMENTER UNE PAGE*/}
       <Route path="*" element={<Error404 />} />
       <Route path="/favorites" element={<Favorites />} />
-      <Route path="/course" element={<Course />} />
+      <Route path="/course/:courseId" element={<Course />} />
       <Route path="/myWorksheets" element={<MyWorksheets />} />
       <Route path="/health_check" element={<HealthCheck />} />
     </Routes>
