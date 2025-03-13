@@ -131,12 +131,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUserInfo({ state: LoginState.LOGGED_OUT });
     }
   };
-  const submitLogin = async ({
-    userName,
-    password,
-  }: UserCredential): Promise<AuthStatus> => {
+  const submitLogin = async (): Promise<AuthStatus> => {
     try {
-      const result = await loginRequest(userName, password);
+      const result = await loginRequest();
 
       if (!result) {
         //Unknown error
@@ -160,12 +157,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // updateLastLoginManagedUser();
     localStorage.setItem("accessToken", "");
   };
-  const submitRegister = async ({
-    userName,
-    password,
-  }: UserCredential): Promise<AuthStatus> => {
+  const submitRegister = async (): Promise<AuthStatus> => {
     try {
-      const result = await registerRequest(userName, password);
+      const result = await registerRequest();
 
       if (!result) {
         return AuthStatus.ERROR;

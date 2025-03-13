@@ -1,37 +1,17 @@
 name: Push Code
-
+#e
 on:
   push:
     branches:
-      - main  
+      - master
   pull_request:
     branches:
-      - main
+      - master
     types:
-      - closed 
+      - closed
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout du repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      
-      - name: Installer Nodes
-        run: |
-          sudo apt update && sudo apt upgrade -y
-          sudo apt install nodejs npm -y
-          sudo npm install
-          sudo npm run build --silent &
-
-      - name: Test curl
-        run: |
-          curl localhost:8080
-
   build-and-push:
-    needs: test
     runs-on: ubuntu-latest
 
     steps:
@@ -39,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-     
+
       - name: install clever cloud
         run: |
           sudo apt install gpg
@@ -60,7 +40,7 @@ jobs:
 
       - name: Installer GIT
         run: sudo apt update | sudo apt install git -y
-      
+
       - name: Configurer Git pour GitHub Actions
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -71,14 +51,13 @@ jobs:
 
       - name: Deploy github
         run: |
-             git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/${{ secrets.APP_ID_DEV }}.git 
-             git add .
-             git commit -m "Mise à jour automatique via CI/CD" || echo "Aucune modification à commit"
-             git push clever main:master --force
-      
+          git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/${{ secrets.APP_ID }}.git 
+          git add .
+          git commit -m "Mise à jour automatique via CI/CD" || echo "Aucune modification à commit"
+          git push clever master --force
 
       - name: SET VENV
         run: |
-             clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
-             clever link ${{ secrets.APP_ID_DEV }} --alias FRONT_PROD
-             nohup clever restart --alias FRONT_PROD > /dev/null 2>&1 &
+          clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
+          clever link ${{ secrets.APP_ID }} --alias FRONT_PROD
+          nohup clever restart --alias FRONT_PROD > /dev/null 2>&1 &
