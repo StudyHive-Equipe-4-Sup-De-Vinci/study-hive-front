@@ -28,7 +28,7 @@ jobs:
 
       - name: Start server
         run: |
-          sudo npm start -y 
+          sudo npm start -y --silent &
 
       - name: Test curl
         run: |
