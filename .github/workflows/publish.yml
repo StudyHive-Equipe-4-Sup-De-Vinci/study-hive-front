@@ -24,7 +24,7 @@ jobs:
 
       - name: Build Package
         run: |
-          sudo nmp install
+          sudo npm install
 
       - name: Start server
         run: |
