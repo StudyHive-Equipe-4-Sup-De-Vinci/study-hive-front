@@ -2,66 +2,82 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthStatus, useAuth } from "../../context/AuthContext";
 import { authStatusToString } from "../../utils/enumToString";
-import "./login.css";
 
-function Login() {
-  const navigate = useNavigate();
-  const [userName, setUserName] = useState<string>();
-  const [password, setPassword] = useState<string>();
-  const [errorMessage, setErrorMessage] = useState<string>();
-  const { submitLogin } = useAuth();
+export default function Login() {
+    const navigate = useNavigate();
+    const [userName, setUserName] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    const { submitLogin } = useAuth();
 
-  const submit = async () => {
-    if (userName && password) {
-      const status = await submitLogin({ userName, password });
-      if (status != AuthStatus.OK) {
-        setErrorMessage(authStatusToString(status));
-        return;
-      }
-    }
+    const submit = async () => {
+        if (userName && password) {
+            const status = await submitLogin({ userName, password });
+            if (status != AuthStatus.OK) {
+                setErrorMessage(authStatusToString(status));
+                return;
+            }
+        } else {
+            setErrorMessage("Veuillez remplir tous les champs");
+            return;
+        }
 
-    navigate("/");
-  };
-  return (
-    <>
-      <div className="signinBox">
-        <div>Connexion</div>
-        <div>
-          <input
-            className="form__input"
-            autoFocus
-            type="text"
-            placeholder="Email ou Pseudo"
-            onChange={(e) => {
-              const value = e.target.value;
-              if (value != "") setUserName(value);
-            }}
-          />
+        navigate("/");
+    };
+
+    return (
+        <div className="size-[670px] w-full flex items-center justify-center bg-white p-4 rounded-lg shadow-md">
+            <div className="w-full max-w-sm">
+                <h2 className="flex mb-10 text-2xl font-medium text-gray-800 text-center items-center justify-center">
+                    Connexion
+                </h2>
+
+                <form onSubmit={(e) => { e.preventDefault(); submit(); }}>
+                    <div className="mb-4">
+                        <input
+                            type="text"
+                            className="w-full p-2 border border-gray-300 rounded"
+                            placeholder="Email ou Pseudo"
+                            value={userName}
+                            onChange={(e) => setUserName(e.target.value)}
+                            autoFocus
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <input
+                            type="password"
+                            className="w-full p-2 border border-gray-300 rounded"
+                            placeholder="Mot de passe"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    {errorMessage && (
+                        <div className="mb-4 text-red-500 text-sm">
+                            {errorMessage}
+                        </div>
+                    )}
+
+                    <div className="mb-4">
+                        <button
+                            type="submit"
+                            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                        >
+                            Se connecter
+                        </button>
+                    </div>
+
+                    <div className="text-center text-sm text-gray-500">
+                        <a href="/signin" className="text-blue-500 hover:underline">
+                            Créer un compte
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div>
-          <input
-            className="form__input"
-            type="password"
-            placeholder="Mot de passe"
-            onChange={(e) => {
-              const value = e.target.value;
-              if (value != "") setPassword(value);
-            }}
-          />
-        </div>
-        <div>
-          <button
-            className="signinButton"
-            type="submit"
-            onClick={() => submit()}
-          >
-            Se connecter
-          </button>
-          {errorMessage && <div>{errorMessage}</div>}
-        </div>
-      </div>
-    </>
-  );
+    );
 }
-
-export default Login;
