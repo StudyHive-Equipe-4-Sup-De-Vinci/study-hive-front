@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { useState, useRef } from "react";
 import "./navbar.css";
+import { LoginState, useAuth } from "../../context/AuthContext";
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const { userInfo, logout } = useAuth();
   const toggleDropdown = () => {
     if (isDropdownOpen) {
       setIsDropdownOpen(false);
@@ -15,13 +16,16 @@ export default function Navbar() {
       // Ajouter un gestionnaire d'événement pour les clics en dehors du menu
       setTimeout(() => {
         const handleClickOutside = (event: MouseEvent) => {
-          if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+          if (
+            dropdownRef.current &&
+            !dropdownRef.current.contains(event.target as Node)
+          ) {
             setIsDropdownOpen(false);
-            document.removeEventListener('click', handleClickOutside);
+            document.removeEventListener("click", handleClickOutside);
           }
         };
 
-        document.addEventListener('click', handleClickOutside);
+        document.addEventListener("click", handleClickOutside);
       }, 0);
     }
   };
@@ -99,40 +103,53 @@ export default function Navbar() {
             </button>
 
             {isDropdownOpen && (
-                <div className="dropdown-menu">
+              <div className="dropdown-menu">
+                <Link
+                  to="/profile"
+                  className="menu-item"
+                  style={{ textDecoration: "none" }}
+                  onClick={handleLinkClick}
+                >
+                  <span>Profil</span>
+                </Link>
+                <Link
+                  to="/myWorksheets"
+                  className="menu-item"
+                  style={{ textDecoration: "none" }}
+                  onClick={handleLinkClick}
+                >
+                  <span>Mes fiches</span>
+                </Link>
+                <Link
+                  to="/favorites"
+                  className="menu-item"
+                  style={{ textDecoration: "none" }}
+                  onClick={handleLinkClick}
+                >
+                  <span>Favoris</span>
+                </Link>
+                {userInfo?.state == LoginState.LOGGED_IN && (
                   <Link
-                      to="/profile"
-                      className="menu-item"
-                      style={{ textDecoration: "none" }}
-                      onClick={handleLinkClick}
+                    to="/"
+                    className="menu-item"
+                    style={{ textDecoration: "none" }}
+                    onClick={logout}
                   >
-                    <span>Profil</span>
+                    <span>Se Déconnecter</span>
                   </Link>
+                )}
+                {userInfo?.state == LoginState.LOGGED_OUT && (
                   <Link
-                      to="/myWorksheets"
-                      className="menu-item"
-                      style={{ textDecoration: "none" }}
-                      onClick={handleLinkClick}
-                  >
-                    <span>Mes fiches</span>
-                  </Link>
-                  <Link
-                      to="/favorites"
-                      className="menu-item"
-                      style={{ textDecoration: "none" }}
-                      onClick={handleLinkClick}
-                  >
-                    <span>Favoris</span>
-                  </Link>
-                  <Link
-                      to="/login"
-                      className="menu-item"
-                      style={{ textDecoration: "none" }}
-                      onClick={handleLinkClick}
+                    to="/login"
+                    className="menu-item"
+                    style={{ textDecoration: "none" }}
+                    onClick={handleLinkClick}
                   >
                     <span>Se connecter</span>
                   </Link>
-                  {/*<Link
+                )}
+
+                {/*<Link
                       to="/signin"
                       className="menu-item"
                       style={{ textDecoration: "none" }}
@@ -140,7 +157,7 @@ export default function Navbar() {
                   >
                     <span>S'inscrire</span>
                   </Link>*/}
-                </div>
+              </div>
             )}
           </div>
         </div>
