@@ -4,18 +4,46 @@ on:
     branches:
       - master
     types:
-      - closed 
-
+      - closed  
 jobs:
-  build-and-push:
+  test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout du repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-     
+      
+      - name: Installer Nodes
+        run: |
+          sudo apt update && sudo apt upgrade -y
+          sudo apt install nodejs npm -y
+
+      - name: Build Package
+        run: |
+          sudo npm install
+
+      - name: Start server
+        run: |
+          sudo npm start -y --silent &
+
+      - name: Test curl avec retry
+        run: |
+          for i in {1..5}; do
+            curl --retry 5 --retry-delay 5 --retry-connrefused http://localhost:8080 && break
+            echo "Retry $i..."
+            sleep 5
+          done
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: install clever cloud
         run: |
           sudo apt install gpg
@@ -36,7 +64,7 @@ jobs:
 
       - name: Installer GIT
         run: sudo apt update | sudo apt install git -y
-      
+
       - name: Configurer Git pour GitHub Actions
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -47,15 +75,13 @@ jobs:
 
       - name: Deploy github
         run: |
-             git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/${{ secrets.APP_ID }}.git 
-             git add .
-             git commit -m "Mise à jour automatique via CI/CD" || echo "Aucune modification à commit"
-             git push clever master --force
-      
+          git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/${{ secrets.APP_ID }}.git 
+          git add .
+          git commit -m "Mise à jour automatique via CI/CD" || echo "Aucune modification à commit"
+          git push clever main:master --force
 
       - name: SET VENV
         run: |
-             clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
-             clever link ${{ secrets.APP_ID }} --alias FRONT_PROD
-             nohup clever restart --alias FRONT_PROD > /dev/null 2>&1 &
-    
+          clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
+          clever link ${{ secrets.APP_ID }} --alias FRONT_PROD
+          nohup clever restart --alias FRONT_PROD > /dev/null 2>&1 &
