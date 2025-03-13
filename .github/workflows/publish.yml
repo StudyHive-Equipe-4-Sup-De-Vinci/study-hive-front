@@ -21,8 +21,14 @@ jobs:
         run: |
           sudo apt update && sudo apt upgrade -y
           sudo apt install nodejs npm -y
-          sudo npm install 
-          sudo npm start -y --silent &
+
+      - name: Build Package
+        run: |
+          sudo nmp install
+
+      - name: Start server
+        run: |
+          sudo npm start -y 
 
       - name: Test curl
         run: |
