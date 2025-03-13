@@ -3,7 +3,7 @@ import { AuthStatus } from "../context/AuthContext";
 export const authStatusToString = (status: AuthStatus): string => {
   switch (status) {
     case AuthStatus.LOGIN_UNAVAILABLE:
-      return "login invalide";
+      return "L'Email ou le Pseudo existe déjà";
     case AuthStatus.ERROR:
       return "Erreur interne";
     case AuthStatus.INVALID_FORMAT:
