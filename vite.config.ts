@@ -7,10 +7,14 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   return {
     define: {
-      "process.env.BACKEND_URL": JSON.stringify(env.BACKEND_URL),
+      "import.meta.env.VITE_BACKEND_URL": JSON.stringify(env.VITE_BACKEND_URL),
     },
 
     plugins: [react(), tailwindcss()],
-    server: { port: Number(env.PORT) },
+    server: {
+      host: "0.0.0.0", // ✅ Permet à Clever Cloud d'écouter sur toutes les interfaces
+      port: 8080,
+      allowedHosts: ["app-67d861fe-061f-4753-8e0b-c14b4cdd3973.cleverapps.io"],
+    },
   };
 });

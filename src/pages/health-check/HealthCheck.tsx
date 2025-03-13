@@ -13,11 +13,11 @@ function HealthCheck() {
   const healthCheck = async () => {
     try {
       const healthCheckState = await axiosI.get(
-        process.env.BACKEND_URL + "/health_check"
+        import.meta.env.VITE_BACKEND_URL + "/health_check"
       );
       console.log(healthCheckState);
       setHealthCheckStatus(HealthState.OK);
-    } catch (e) {
+    } catch (e: any) {
       console.log(e.status);
       if (e.status == 500) {
         setHealthCheckStatus(HealthState.ERROR_DB);
