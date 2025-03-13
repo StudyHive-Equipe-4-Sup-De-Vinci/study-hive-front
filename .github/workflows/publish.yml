@@ -21,8 +21,14 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install npm
-        run: sudo apt install node npm -y
+      - name: Installer Nodes
+        run: |
+          sudo apt update && sudo apt upgrade -y
+          sudo apt install nodejs npm -y
+  
+      - name: Build Package
+        run: |
+          sudo npm install
 
       - name: Install dependencies
         run: sudo npm install eslint
