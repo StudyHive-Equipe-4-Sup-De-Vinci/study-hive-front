@@ -1,9 +1,5 @@
 name: Push Code
-#e
 on:
-  push:
-    branches:
-      - master
   pull_request:
     branches:
       - master
@@ -11,9 +7,27 @@ on:
       - closed
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Installer Nodes
+        run: |
+          sudo apt update && sudo apt upgrade -y
+          sudo apt install nodejs npm -y
+          sudo npm install
+          sudo npm start --silent &
+
+      - name: Test curl
+        run: |
+          curl localhost:3000
+
   build-and-push:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout du repo
         uses: actions/checkout@v4
@@ -51,13 +65,13 @@ jobs:
 
       - name: Deploy github
         run: |
-          git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/${{ secrets.APP_ID }}.git 
+          git remote add clever git+ssh://git@push-n3-par-clevercloud-customers.services.clever-cloud.com/${{ secrets.APP_ID_DEV }}.git 
           git add .
           git commit -m "Mise à jour automatique via CI/CD" || echo "Aucune modification à commit"
-          git push clever master --force
+          git push clever main:master --force
 
       - name: SET VENV
         run: |
           clever login --token ${{ secrets.CLEVER_TOKEN }} --secret ${{ secrets.CLEVER_SECRET }}
-          clever link ${{ secrets.APP_ID }} --alias FRONT_PROD
-          nohup clever restart --alias FRONT_PROD > /dev/null 2>&1 &
+          clever link ${{ secrets.APP_ID_DEV }} --alias FRONT_DEV
+          nohup clever restart --alias FRONT_DEV > /dev/null 2>&1 &
