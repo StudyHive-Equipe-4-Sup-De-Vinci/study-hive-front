@@ -67,8 +67,9 @@ export default tseslint.config({
    - **Description** : Secret associé au token pour l'authentification CleverCloud.  
    - **Source** : Stockée dans les *secrets* de GitHub.
 
-4. **APP_ID_DEV**  
-   - **Description** : ID de l'application sur CleverCloud pour l'environnement de développement.  
+
+4. **APP_ID**  
+   - **Description** : ID de l'application sur CleverCloud pour l'environnement de production.  
    - **Source** : Stockée dans les *secrets* de GitHub.
 
 ### Explication des étapes de workflow
@@ -118,7 +119,7 @@ Une fois que les tests sont passés avec succès, ce job déploie l'application 
    - Ajoute un dépôt distant `clever` à l'aide de SSH et pousse le code vers CleverCloud en forçant la mise à jour sur la branche `master`.
 
 8. **SET VENV**  
-   - Cette étape permet de se connecter à CleverCloud en utilisant un token et un secret, puis lie l'application à l'environnement CleverCloud pour l'environnement de développement (`FRONT_DEV`). Enfin, elle redémarre l'application sur CleverCloud.
+   - Cette étape permet de se connecter à CleverCloud en utilisant un token et un secret, puis lie l'application à l'environnement CleverCloud pour l'environnement de développement (`FRONT_PROD`). Enfin, elle redémarre l'application sur CleverCloud.
 
 ## Prérequis
 
@@ -127,6 +128,7 @@ Pour que ce processus fonctionne correctement, vous devez avoir configuré les s
 - `CLEVER_SSH_PRIVATE_KEY`
 - `CLEVER_TOKEN`
 - `CLEVER_SECRET`
-- `APP_ID_DEV`
+
+- `APP_ID`
 
 Ces secrets sont utilisés pour sécuriser la connexion à votre application CleverCloud et pour automatiser le déploiement.
