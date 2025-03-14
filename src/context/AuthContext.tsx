@@ -1,7 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getMeRequest, loginRequest, registerRequest } from "../api/auth";
-// import { updateLastLoginManagedUser } from "../api/users";
-import { UserCredential } from "../types/auth.type";
+import { getProtected, loginRequest, registerRequest } from "../api/auth";
 import axios from "axios";
 import axiosI from "../axiosInterceptor";
 
@@ -9,22 +7,29 @@ type UserInfo =
   | {
       state: LoginState.LOGGED_OUT;
     }
-  | ({ state: LoginState.LOGGED_IN } & User);
+  | { state: LoginState.LOGGED_IN };
 
-export type User = {
-  id: string;
-  userName: string;
-  lastLogin?: Date;
+export type UserSignup = {
+  name: string;
+  email: string;
+  password: string;
 };
+
+export type UserLogin = {
+  username: string;
+  password: string;
+};
+
 interface IAuthContext {
   userInfo: UserInfo | null;
-  submitLogin: ({ userName, password }: UserCredential) => Promise<AuthStatus>;
+  submitLogin: ({ username, password }: UserLogin) => Promise<AuthStatus>;
   logout: () => Promise<void>;
   submitRegister: ({
-    userName,
+    name,
+    email,
     password,
-  }: UserCredential) => Promise<AuthStatus>;
-  retrieveUserInfos: () => void;
+  }: UserSignup) => Promise<AuthStatus>;
+  // retrieveUserInfos: () => void;
 }
 
 export enum AuthStatus {
@@ -45,7 +50,7 @@ const AuthContext = createContext<IAuthContext>({
   submitLogin: async () => AuthStatus.ERROR,
   logout: async () => {},
   submitRegister: async () => AuthStatus.ERROR,
-  retrieveUserInfos: async () => {},
+  // retrieveUserInfos: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -67,7 +72,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       const interceptor = axiosI.interceptors.request.use((config) => {
         if (config?.headers && !config.headers.Authorization) {
-          config.headers.Authorization = `Bearer ${accessToken}`;
+          config.headers.Authorization = `${accessToken}`;
         }
         return config;
       });
@@ -79,33 +84,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     updateUserInfo();
   }, [accessToken, isReady]);
 
-  const retrieveUserInfos = async () => {
-    if (!isReady) {
-      return;
-    }
+  // const retrieveUserInfos = async () => {
+  //   if (!isReady) {
+  //     return;
+  //   }
 
-    if (!accessToken) {
-      setUserInfo({ state: LoginState.LOGGED_OUT });
-    }
+  //   if (!accessToken) {
+  //     setUserInfo({ state: LoginState.LOGGED_OUT });
+  //   }
 
-    try {
-      const me = await getMeRequest();
-      if (me) {
-        setUserInfo({
-          state: LoginState.LOGGED_IN,
-          ...(me as {
-            id: string;
-            userName: string;
-            refreshToken: string;
-          }),
-        });
-      } else {
-        setUserInfo({ state: LoginState.LOGGED_OUT });
-      }
-    } catch {
-      setUserInfo({ state: LoginState.LOGGED_OUT });
-    }
-  };
+  //   try {
+  //     // const me = await getMeRequest();
+  //     // if (me) {
+  //     //   setUserInfo({
+  //     //     state: LoginState.LOGGED_IN,
+  //     //     ...(me as {
+  //     //       id: string;
+  //     //       userName: string;
+  //     //     }),
+  //     //   });
+  //     } else {
+  //       setUserInfo({ state: LoginState.LOGGED_OUT });
+  //     }
+  //   } catch {
+  //     setUserInfo({ state: LoginState.LOGGED_OUT });
+  //   }
+  // };
   const updateUserInfo = async () => {
     if (!isReady) {
       return;
@@ -115,14 +119,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUserInfo({ state: LoginState.LOGGED_OUT });
     }
     try {
-      const me = await getMeRequest();
+      // const me = await getMeRequest();
       // const info = await updateLastLoginManagedUser();
-      const info: User = { id: "idtest", userName: "test" };
-      if (info) {
+      // const info: UserLogin = { id: "idtest", userName: "test" };
+      if (await getProtected()) {
         setUserInfo({
           state: LoginState.LOGGED_IN,
-          ...info,
-          lastLogin: me.lastLogin,
         });
       } else {
         setUserInfo({ state: LoginState.LOGGED_OUT });
@@ -131,19 +133,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUserInfo({ state: LoginState.LOGGED_OUT });
     }
   };
-  const submitLogin = async (): Promise<AuthStatus> => {
+  const submitLogin = async (user: UserLogin): Promise<AuthStatus> => {
     try {
-      const result = await loginRequest();
-
+      const result = await loginRequest(user);
+      console.log(result);
       if (!result) {
         //Unknown error
         return AuthStatus.ERROR;
       }
-      setAccessToken(result.access_token);
+      setAccessToken(result.token);
       setUserInfo(null); //Forces router to wait until user data has been re-retrieved
 
       return AuthStatus.OK;
     } catch (err) {
+      console.log(err);
       if (axios.isAxiosError(err) && err.request.status === 403) {
         //Wrong credentials
         return AuthStatus.WRONG_CREDENTIALS;
@@ -153,18 +156,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
   const logout = async () => {
     setAccessToken(null);
-    setUserInfo(null); //Forces router to wait until user data has been re-retrieved
-    // updateLastLoginManagedUser();
+    setUserInfo({ state: LoginState.LOGGED_OUT }); //Forces router to wait until user data has been re-retrieved
     localStorage.setItem("accessToken", "");
   };
-  const submitRegister = async (): Promise<AuthStatus> => {
+  const submitRegister = async (user: UserSignup): Promise<AuthStatus> => {
     try {
-      const result = await registerRequest();
-
+      const result = await registerRequest({ ...user });
       if (!result) {
         return AuthStatus.ERROR;
       }
-      setAccessToken(result.access_token);
       return AuthStatus.OK;
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -188,7 +188,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         submitLogin,
         logout,
         submitRegister,
-        retrieveUserInfos,
+        // retrieveUserInfos,
       }}
     >
       {children}

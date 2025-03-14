@@ -67,6 +67,7 @@ export default tseslint.config({
    - **Description** : Secret associé au token pour l'authentification CleverCloud.  
    - **Source** : Stockée dans les *secrets* de GitHub.
 
+
 4. **APP_ID**  
    - **Description** : ID de l'application sur CleverCloud pour l'environnement de production.  
    - **Source** : Stockée dans les *secrets* de GitHub.
@@ -127,7 +128,7 @@ Pour que ce processus fonctionne correctement, vous devez avoir configuré les s
 - `CLEVER_SSH_PRIVATE_KEY`
 - `CLEVER_TOKEN`
 - `CLEVER_SECRET`
+
 - `APP_ID`
 
 Ces secrets sont utilisés pour sécuriser la connexion à votre application CleverCloud et pour automatiser le déploiement.
-
