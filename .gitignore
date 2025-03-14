@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .env
+
+*.publish.yml
+.publish.yml
