@@ -22,6 +22,27 @@ const MATIERES = [
   "Arts",
 ];
 
+export type Post = {
+  id: number;
+  title: string;
+  content_link: string;
+  description: string;
+  category_id: number;
+  category: { id: number; name: string };
+  isLiked?: boolean;
+  isDisliked?: boolean;
+  isSaved?: boolean;
+  voteCount?: number;
+  grade?: number; // Ajouter cette ligne
+  user?: {
+    id: number;
+    name: string;
+    registration_date: string;
+    profile_picture_link: string;
+  };
+  created_at?: string;
+};
+
 // Mapping des matières vers les IDs de catégories
 const MATIERE_TO_CATEGORY_ID: Record<string, number> = {
   "Mathématiques": 1,
@@ -55,7 +76,7 @@ interface Comment {
   isLiked: boolean;
 }
 
-export type Post = {
+/*export type Post = {
   id: number;
   title: string;
   content_link: string;
@@ -73,7 +94,7 @@ export type Post = {
     profile_picture_link: string;
   };
   created_at?: string;
-};
+};*/
 
 export default function Course() {
   // État pour les fichiers importés
@@ -92,7 +113,7 @@ export default function Course() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // État pour les votes du post
-  const [postVotes, setPostVotes] = useState(0);
+  const [, setPostVotes] = useState(0);
   const [userVote, setUserVote] = useState<"up" | "down" | null>(null);
 
   // État pour sauvegarde
@@ -679,7 +700,9 @@ export default function Course() {
                 />
               </svg>
             </button>
-            <span className="my-1 font-medium text-gray-800">{postVotes}</span>
+            <span className="my-1 font-medium text-gray-800">
+    {post?.grade || 0}
+  </span>
             <button
                 className={`p-1 h-full rounded-md hover:bg-gray-200 ${
                     userVote === "down" ? "text-blue-500" : "text-gray-400"

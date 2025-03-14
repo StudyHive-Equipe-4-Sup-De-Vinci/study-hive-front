@@ -35,6 +35,7 @@ interface Post {
     user: User;
     category: Category;
     voteCount?: number;
+    grade?: number; // Ajout du champ grade
     isSaved?: boolean;
 }
 
@@ -115,6 +116,12 @@ export default function MyWorksheets() {
                     }
                 }
             }
+
+            // Vérifier si les posts ont le champ grade, sinon utiliser voteCount ou 0
+            postsData = postsData.map(post => ({
+                ...post,
+                grade: post.grade !== undefined ? post.grade : (post.voteCount || 0)
+            }));
 
             setPosts(postsData);
         } catch (error: any) {
@@ -226,6 +233,20 @@ export default function MyWorksheets() {
         }
     };
 
+    // Fonction pour formater la date
+    const formatDate = (dateString: string) => {
+        try {
+            const date = new Date(dateString);
+            return new Intl.DateTimeFormat('fr-FR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }).format(date);
+        } catch (e) {
+            return dateString;
+        }
+    };
+
     return (
         <main>
             {/* Message d'action (feedback) */}
@@ -267,7 +288,7 @@ export default function MyWorksheets() {
                             posts.map((post) => (
                                 <div className="course-card" key={post.id}>
                                     <div className="vote-section">
-                                        <span className="vote-count">{post.voteCount || 0}</span>
+                                        <span className="vote-count">{post.grade || 0}</span>
                                     </div>
                                     <div className="course-content">
                                         <Link to={`/course/${post.id}`} style={{ textDecoration: "none" }}>
@@ -275,6 +296,9 @@ export default function MyWorksheets() {
                                                 <div className="course-meta">
                                                     <span className="category-tag">{post.category?.name || "Catégorie"}</span>
                                                     <span className="author">Posté par {post.user?.name || "Vous"}</span>
+                                                    <span className="text-gray-500 text-sm ml-2">
+                                                        {formatDate(post.created_at)}
+                                                    </span>
                                                 </div>
                                                 <h3 className="course-title">{post.title}</h3>
                                             </div>

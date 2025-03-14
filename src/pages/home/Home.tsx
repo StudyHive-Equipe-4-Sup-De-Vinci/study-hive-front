@@ -36,6 +36,7 @@ interface Post {
   category: Category;
   isSaved?: boolean;
   voteCount?: number;
+  grade?: number; // Note du post
 }
 
 export default function Home() {
@@ -94,6 +95,12 @@ export default function Home() {
         }
       }
 
+      // Vérifier si les posts ont le champ grade, sinon utiliser voteCount ou 0
+      postsData = postsData.map(post => ({
+        ...post,
+        grade: post.grade !== undefined ? post.grade : (post.voteCount || 0)
+      }));
+
       setPosts(postsData);
       setLoading(false);
     } catch (error: any) {
@@ -146,12 +153,13 @@ export default function Home() {
   const handlePostsFiltered = (filteredPosts: Post[]) => {
     console.log("Posts filtrés reçus dans Home:", filteredPosts);
 
-    // Conserver l'état isSaved des posts existants
+    // Conserver l'état isSaved et grade des posts existants
     const updatedPosts = filteredPosts.map(newPost => {
       const existingPost = posts.find(p => p.id === newPost.id);
       return {
         ...newPost,
-        isSaved: existingPost?.isSaved || false
+        isSaved: existingPost?.isSaved || false,
+        grade: newPost.grade !== undefined ? newPost.grade : (existingPost?.grade || 0)
       };
     });
 
@@ -200,6 +208,20 @@ export default function Home() {
     }
   };
 
+  // Fonction pour formater la date
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      }).format(date);
+    } catch (e) {
+      return dateString;
+    }
+  };
+
   return (
       <main>
         {/* Message d'action (feedback) */}
@@ -241,7 +263,7 @@ export default function Home() {
                   posts.map((post) => (
                       <div className="course-card" key={post.id}>
                         <div className="vote-section">
-                          <span className="vote-count">{post.voteCount || 0}</span>
+                          <span className="vote-count">{post.grade !== undefined ? post.grade : 0}</span>
                         </div>
                         <div className="course-content">
                           <Link to={`/course/${post.id}`} style={{ textDecoration: "none" }}>
@@ -249,6 +271,9 @@ export default function Home() {
                               <div className="course-meta">
                                 <span className="category-tag">{post.category?.name || "Catégorie"}</span>
                                 <span className="author">Posté par {post.user?.name || "Utilisateur"}</span>
+                                <span className="text-gray-500 text-sm ml-2">
+                                  {formatDate(post.created_at)}
+                                </span>
                               </div>
                               <h3 className="course-title">
                                 {post.title}
@@ -259,25 +284,6 @@ export default function Home() {
                             </div>
                           </Link>
                           <div className="course-footer">
-                            <button className="btn-text">
-                        <span className="material-symbols-outlined">
-                          <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="lucide lucide-message-square"
-                          >
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                          </svg>
-                        </span>
-                              0
-                            </button>
                             <button
                                 className={`btn-text ${post.isSaved ? 'text-blue-500' : ''}`}
                                 onClick={() => handleSavePost(post.id)}

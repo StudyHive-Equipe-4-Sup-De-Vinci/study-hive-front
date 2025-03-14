@@ -35,12 +35,24 @@ interface Post {
     user: User;
     category: Category;
     voteCount?: number; // Optionnel, si disponible dans votre API
+    grade?: number; // Ajout du grade comme dans les autres composants
 }
 
 export default function MyWorksheets() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [actionMessage, setActionMessage] = useState<{text: string, type: 'success' | 'error'} | null>(null);
+
+    // Effet pour masquer les messages d'action après un délai
+    useEffect(() => {
+        if (actionMessage) {
+            const timer = setTimeout(() => {
+                setActionMessage(null);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [actionMessage]);
 
     useEffect(() => {
         const fetchFavoritePosts = async () => {
@@ -48,26 +60,35 @@ export default function MyWorksheets() {
                 const response = await axiosI.get('/api/posts/favorites');
                 console.log("Réponse API:", response.data);
 
+                let postsData: Post[] = [];
+
                 // Vérifier d'abord si Posts (majuscule) existe
                 if (response.data && response.data.Posts && Array.isArray(response.data.Posts)) {
-                    setPosts(response.data.Posts);
+                    postsData = response.data.Posts;
                     console.log("Posts favoris mis à jour:", response.data.Posts);
                 }
                 // Ensuite vérifier si posts (minuscule) existe
                 else if (response.data && response.data.posts && Array.isArray(response.data.posts)) {
-                    setPosts(response.data.posts);
+                    postsData = response.data.posts;
                     console.log("Posts favoris mis à jour:", response.data.posts);
                 }
                 // Si aucun des deux n'existe, vérifier si la réponse elle-même est un tableau
                 else if (Array.isArray(response.data)) {
-                    setPosts(response.data);
+                    postsData = response.data;
                     console.log("Posts favoris mis à jour (format tableau):", response.data);
                 }
                 else {
                     console.error("Format de réponse inattendu:", response.data);
-                    setPosts([]);
+                    postsData = [];
                 }
 
+                // S'assurer que chaque post a un grade (utiliser voteCount si grade n'existe pas)
+                postsData = postsData.map(post => ({
+                    ...post,
+                    grade: post.grade !== undefined ? post.grade : (post.voteCount || 0)
+                }));
+
+                setPosts(postsData);
                 setLoading(false);
             } catch (error: any) {
                 console.error("Erreur lors de la récupération des posts favoris:", error);
@@ -90,14 +111,41 @@ export default function MyWorksheets() {
             await axiosI.post(`/api/posts/${postId}/unsave`);
             // Mise à jour locale de l'état pour refléter le changement immédiatement
             setPosts(posts.filter(post => post.id !== postId));
+            setActionMessage({ text: "Retiré des favoris", type: 'success' });
         } catch (error: any) {
             console.error("Erreur lors du retrait des favoris:", error);
-            alert("Impossible de retirer ce post des favoris. Veuillez réessayer.");
+            setActionMessage({
+                text: "Impossible de retirer ce post des favoris. Veuillez réessayer.",
+                type: 'error'
+            });
+        }
+    };
+
+    // Fonction pour formater la date
+    const formatDate = (dateString: string) => {
+        try {
+            const date = new Date(dateString);
+            return new Intl.DateTimeFormat('fr-FR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }).format(date);
+        } catch (e) {
+            return dateString;
         }
     };
 
     return (
         <main>
+            {/* Message d'action (feedback) */}
+            {actionMessage && (
+                <div className={`fixed top-4 right-4 z-50 px-4 py-2 rounded shadow-lg ${
+                    actionMessage.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                }`}>
+                    {actionMessage.text}
+                </div>
+            )}
+
             <div className="favoris-content">
                 <div className="content-header">
                     <div className="content-header-actions">
@@ -120,14 +168,17 @@ export default function MyWorksheets() {
                             posts.map((post) => (
                                 <div className="course-card" key={post.id}>
                                     <div className="vote-section">
-                                        <span className="vote-count">{post.voteCount || 0}</span>
+                                        <span className="vote-count">{post.grade || 0}</span>
                                     </div>
                                     <div className="course-content">
                                         <Link to={`/course/${post.id}`} style={{ textDecoration: "none" }}>
                                             <div className="course-header">
                                                 <div className="course-meta">
-                                                    <span className="category-tag">{post.category.name}</span>
-                                                    <span className="author">Posté par {post.user.name}</span>
+                                                    <span className="category-tag">{post.category?.name || "Catégorie"}</span>
+                                                    <span className="author">Posté par {post.user?.name || "Utilisateur"}</span>
+                                                    <span className="text-gray-500 text-sm ml-2">
+                                                        {formatDate(post.created_at)}
+                                                    </span>
                                                 </div>
                                                 <h3 className="course-title">{post.title}</h3>
                                             </div>
@@ -136,27 +187,8 @@ export default function MyWorksheets() {
                                             </div>
                                         </Link>
                                         <div className="course-footer">
-                                            <button className="btn-text">
-                                                <span className="material-symbols-outlined">
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="24"
-                                                        height="24"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        className="lucide lucide-message-square"
-                                                    >
-                                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                                                    </svg>
-                                                </span>
-                                                0
-                                            </button>
                                             <button
-                                                className="btn-text icon-btn text-yellow-500"
+                                                className="btn-text text-blue-500"
                                                 onClick={() => handleRemoveFromFavorites(post.id)}
                                                 title="Retirer des favoris"
                                             >
