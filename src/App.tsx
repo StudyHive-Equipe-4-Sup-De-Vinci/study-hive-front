@@ -4,7 +4,6 @@ import Navbar from "./components/navbar/navbar";
 import { AuthProvider } from "./context/AuthContext";
 
 function App() {
-  //
   return (
     <>
       <AuthProvider>
